@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	is "github.com/matryer/is"
+	"fmt"
 )
 
 func TestParseAnsi16Styles(t *testing.T) {
@@ -336,6 +337,91 @@ func TestParseAnsi256(t *testing.T) {
 	}
 }
 
+func TestParseKeepNonColor(t *testing.T) {
+	is2 := is.New(t)
+	tests := []struct {
+		name    string
+		input   string
+		want    []*StyledText
+		wantErr bool
+	}{
+		{"Grey93 & DarkViolet", "\u001B[K\u001B[38;5;255m\u001B[KGrey93\u001B[0m\u001B[38;5;128mDark\u001B[KViolet\u001B[0m\u001B[K", []*StyledText{
+			{Label: "\u001B[K"},
+			{Label: "\u001B[K", FgCol: &Col{Name: "Grey93"}},
+			{Label: "Grey93", FgCol: &Col{Name: "Grey93"}},
+			{Label: "Dark", FgCol: &Col{Name: "DarkViolet"}},
+			{Label: "\u001B[K", FgCol: &Col{Name: "DarkViolet"}},
+			{Label: "Violet", FgCol: &Col{Name: "DarkViolet"}},
+			{Label: "\u001B[K"},
+		}, false},
+		{"Grey93 Bold & DarkViolet Italic", "\u001B[K\u001B[0;1;38;5;255m\u001B[KGrey93\u001B[0m\u001B[0;3;38;5;128mDark\u001B[KViolet\u001B[0m\u001B[K", []*StyledText{
+			{Label: "\u001B[K"},
+			{Label: "\u001B[K", FgCol: &Col{Name: "Grey93"}, Style: Bold},
+			{Label: "Grey93", FgCol: &Col{Name: "Grey93"}, Style: Bold},
+			{Label: "Dark", FgCol: &Col{Name: "DarkViolet"}, Style: Italic},
+			{Label: "\u001B[K", FgCol: &Col{Name: "DarkViolet"}, Style: Italic},
+			{Label: "Violet", FgCol: &Col{Name: "DarkViolet"}, Style: Italic},
+			{Label: "\u001B[K"},
+		}, false},
+		{"Grey93 Bold & DarkViolet Italic", "\u001B[0;1;38;5;256mGrey93\u001B[0m", nil, true},
+		{"Grey93 Bold & DarkViolet Italic", "\u001B[0;1;38;5;-1mGrey93\u001B[0m", nil, true},
+		{"Bad No of Params", "\u001B[0;1;38;5mGrey93\u001B[0m", nil, true},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			fmt.Println() //tt.input, tt.want)
+			got, err := Parse(tt.input, ParseOption{nonColorCodes: Keep})
+			is2.Equal(err != nil, tt.wantErr)
+			for index, w := range tt.want {
+				fmt.Println("Compare", got[index].Label, w.Label)
+				is2.Equal(got[index].Label, w.Label)
+				if w.FgCol != nil {
+					is2.Equal(got[index].FgCol.Name, w.FgCol.Name)
+				}
+				is2.Equal(got[index].Style, w.Style)
+			}
+		})
+	}
+}
+
+func TestParseRemoveNonColor(t *testing.T) {
+	is2 := is.New(t)
+	tests := []struct {
+		name    string
+		input   string
+		want    []*StyledText
+		wantErr bool
+	}{
+		{"Grey93 & DarkViolet", "\u001B[K\u001B[38;5;255m\u001B[KGrey93\u001B[0m\u001B[38;5;128mDark\u001B[KViolet\u001B[0m\u001B[K", []*StyledText{
+			{Label: "Grey93", FgCol: &Col{Name: "Grey93"}},
+			{Label: "Dark", FgCol: &Col{Name: "DarkViolet"}},
+			{Label: "Violet", FgCol: &Col{Name: "DarkViolet"}},
+		}, false},
+		{"Grey93 Bold & DarkViolet Italic", "\u001B[K\u001B[0;1;38;5;255m\u001B[KGrey93\u001B[0m\u001B[0;3;38;5;128mDark\u001B[KViolet\u001B[0m\u001B[K", []*StyledText{
+			{Label: "Grey93", FgCol: &Col{Name: "Grey93"}, Style: Bold},
+			{Label: "Dark", FgCol: &Col{Name: "DarkViolet"}, Style: Italic},
+			{Label: "Violet", FgCol: &Col{Name: "DarkViolet"}, Style: Italic},
+		}, false},
+		{"Grey93 Bold & DarkViolet Italic", "\u001B[0;1;38;5;256mGrey93\u001B[0m", nil, true},
+		{"Grey93 Bold & DarkViolet Italic", "\u001B[0;1;38;5;-1mGrey93\u001B[0m", nil, true},
+		{"Bad No of Params", "\u001B[0;1;38;5mGrey93\u001B[0m", nil, true},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			fmt.Println() //tt.input, tt.want)
+			got, err := Parse(tt.input, ParseOption{nonColorCodes: Remove})
+			is2.Equal(err != nil, tt.wantErr)
+			for index, w := range tt.want {
+				fmt.Println("Compare", got[index].Label, w.Label)
+				is2.Equal(got[index].Label, w.Label)
+				if w.FgCol != nil {
+					is2.Equal(got[index].FgCol.Name, w.FgCol.Name)
+				}
+				is2.Equal(got[index].Style, w.Style)
+			}
+		})
+	}
+}
 func TestRoundtripAnsi16(t *testing.T) {
 	is2 := is.New(t)
 	tests := []struct {

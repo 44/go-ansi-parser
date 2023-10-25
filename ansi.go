@@ -262,6 +262,13 @@ var ColourMap = map[string]map[string]*Col{
 // a slice of StyledText structs that represent the text.
 // If parsing is unsuccessful, an error is returned.
 func Parse(input string, options ...ParseOption) ([]*StyledText, error) {
+	nonColorCodes := Ignore
+
+	for _, option := range options {
+		if option.nonColorCodes != Ignore {
+			nonColorCodes = option.nonColorCodes
+		}
+	}
 	var result []*StyledText
 	index := 0
 	offset := 0
@@ -307,9 +314,30 @@ func Parse(input string, options ...ParseOption) ([]*StyledText, error) {
 		input = input[2:]
 
 		// Read in params
-		endesc := strings.Index(input, "m")
+		var endesc int
+
+		if nonColorCodes == Ignore {
+			endesc = strings.Index(input, "m")
+		} else {
+			endesc = strings.IndexFunc(input, func(r rune) bool {
+				return r >= 0x40 && r <=0x7e
+			})
+		}
+
 		if endesc == -1 {
 			return nil, missingTerminator
+		}
+		if input[endesc] != 'm' {
+			if nonColorCodes == Keep {
+				result = append(result, &StyledText{
+					Label: "\033[" + input[:endesc+1],
+					FgCol: currentStyledText.FgCol,
+					BgCol: currentStyledText.BgCol,
+					Style: currentStyledText.Style,
+				})
+			}
+			input = input[endesc+1:]
+			continue
 		}
 		paramText := input[:endesc]
 		input = input[endesc+1:]

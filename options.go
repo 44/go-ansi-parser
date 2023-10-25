@@ -1,10 +1,18 @@
 package ansi
 
+type NonColorCodesBehavior int
+
+const (
+	Ignore NonColorCodesBehavior = iota
+	Keep
+	Remove
+)
 // ParseOption specifies parse option.
 type ParseOption struct {
 	ignoreUnexpectedCode bool
 	ansiForegroundColor  string
 	ansiBackgroundColor  string
+	nonColorCodes        NonColorCodesBehavior
 }
 
 // WithIgnoreInvalidCodes disables returning an error on invalid ANSI code.
