@@ -347,20 +347,14 @@ func TestParseKeepNonColor(t *testing.T) {
 	}{
 		{"Grey93 & DarkViolet", "\u001B[K\u001B[38;5;255m\u001B[KGrey93\u001B[0m\u001B[38;5;128mDark\u001B[KViolet\u001B[0m\u001B[K", []*StyledText{
 			{Label: "\u001B[K"},
-			{Label: "\u001B[K", FgCol: &Col{Name: "Grey93"}},
-			{Label: "Grey93", FgCol: &Col{Name: "Grey93"}},
-			{Label: "Dark", FgCol: &Col{Name: "DarkViolet"}},
-			{Label: "\u001B[K", FgCol: &Col{Name: "DarkViolet"}},
-			{Label: "Violet", FgCol: &Col{Name: "DarkViolet"}},
+			{Label: "\u001B[KGrey93", FgCol: &Col{Name: "Grey93"}},
+			{Label: "Dark\u001B[KViolet", FgCol: &Col{Name: "DarkViolet"}},
 			{Label: "\u001B[K"},
 		}, false},
 		{"Grey93 Bold & DarkViolet Italic", "\u001B[K\u001B[0;1;38;5;255m\u001B[KGrey93\u001B[0m\u001B[0;3;38;5;128mDark\u001B[KViolet\u001B[0m\u001B[K", []*StyledText{
 			{Label: "\u001B[K"},
-			{Label: "\u001B[K", FgCol: &Col{Name: "Grey93"}, Style: Bold},
-			{Label: "Grey93", FgCol: &Col{Name: "Grey93"}, Style: Bold},
-			{Label: "Dark", FgCol: &Col{Name: "DarkViolet"}, Style: Italic},
-			{Label: "\u001B[K", FgCol: &Col{Name: "DarkViolet"}, Style: Italic},
-			{Label: "Violet", FgCol: &Col{Name: "DarkViolet"}, Style: Italic},
+			{Label: "\u001B[KGrey93", FgCol: &Col{Name: "Grey93"}, Style: Bold},
+			{Label: "Dark\u001B[KViolet", FgCol: &Col{Name: "DarkViolet"}, Style: Italic},
 			{Label: "\u001B[K"},
 		}, false},
 		{"Grey93 Bold & DarkViolet Italic", "\u001B[0;1;38;5;256mGrey93\u001B[0m", nil, true},
@@ -394,13 +388,11 @@ func TestParseRemoveNonColor(t *testing.T) {
 	}{
 		{"Grey93 & DarkViolet", "\u001B[K\u001B[38;5;255m\u001B[KGrey93\u001B[0m\u001B[38;5;128mDark\u001B[KViolet\u001B[0m\u001B[K", []*StyledText{
 			{Label: "Grey93", FgCol: &Col{Name: "Grey93"}},
-			{Label: "Dark", FgCol: &Col{Name: "DarkViolet"}},
-			{Label: "Violet", FgCol: &Col{Name: "DarkViolet"}},
+			{Label: "DarkViolet", FgCol: &Col{Name: "DarkViolet"}},
 		}, false},
 		{"Grey93 Bold & DarkViolet Italic", "\u001B[K\u001B[0;1;38;5;255m\u001B[KGrey93\u001B[0m\u001B[0;3;38;5;128mDark\u001B[KViolet\u001B[0m\u001B[K", []*StyledText{
 			{Label: "Grey93", FgCol: &Col{Name: "Grey93"}, Style: Bold},
-			{Label: "Dark", FgCol: &Col{Name: "DarkViolet"}, Style: Italic},
-			{Label: "Violet", FgCol: &Col{Name: "DarkViolet"}, Style: Italic},
+			{Label: "DarkViolet", FgCol: &Col{Name: "DarkViolet"}, Style: Italic},
 		}, false},
 		{"Grey93 Bold & DarkViolet Italic", "\u001B[0;1;38;5;256mGrey93\u001B[0m", nil, true},
 		{"Grey93 Bold & DarkViolet Italic", "\u001B[0;1;38;5;-1mGrey93\u001B[0m", nil, true},

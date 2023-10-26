@@ -258,6 +258,24 @@ var ColourMap = map[string]map[string]*Col{
 	},
 }
 
+func simplify(input []*StyledText) []*StyledText {
+	var result []*StyledText
+	for _, element := range input {
+		if len(result) > 0 {
+			if result[len(result)-1].Style == element.Style &&
+				result[len(result)-1].FgCol == element.FgCol &&
+				result[len(result)-1].BgCol == element.BgCol {
+				result[len(result)-1].Label += element.Label
+			} else {
+				result = append(result, element)
+			}
+		} else {
+			result = append(result, element)
+		}
+	}
+	return result
+}
+
 // Parse will convert an ansi encoded string and return
 // a slice of StyledText structs that represent the text.
 // If parsing is unsuccessful, an error is returned.
@@ -292,7 +310,7 @@ func Parse(input string, options ...ParseOption) ([]*StyledText, error) {
 				currentStyledText.Len = len(text) + escapeCodeLen
 				result = append(result, currentStyledText)
 			}
-			return result, nil
+			return simplify(result), nil
 		}
 		label := input[:esc]
 		if len(label) > 0 {
