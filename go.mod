@@ -1,4 +1,4 @@
-module github.com/leaanthony/go-ansi-parser
+module github.com/44/go-ansi-parser
 
 go 1.16
 
