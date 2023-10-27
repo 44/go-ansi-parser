@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	is "github.com/matryer/is"
-	"fmt"
 )
 
 func TestParseAnsi16Styles(t *testing.T) {
@@ -363,11 +362,9 @@ func TestParseKeepNonColor(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			fmt.Println() //tt.input, tt.want)
 			got, err := Parse(tt.input, ParseOption{nonColorCodes: Keep})
 			is2.Equal(err != nil, tt.wantErr)
 			for index, w := range tt.want {
-				fmt.Println("Compare", got[index].Label, w.Label)
 				is2.Equal(got[index].Label, w.Label)
 				if w.FgCol != nil {
 					is2.Equal(got[index].FgCol.Name, w.FgCol.Name)
@@ -400,11 +397,9 @@ func TestParseRemoveNonColor(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			fmt.Println() //tt.input, tt.want)
 			got, err := Parse(tt.input, ParseOption{nonColorCodes: Remove})
 			is2.Equal(err != nil, tt.wantErr)
 			for index, w := range tt.want {
-				fmt.Println("Compare", got[index].Label, w.Label)
 				is2.Equal(got[index].Label, w.Label)
 				if w.FgCol != nil {
 					is2.Equal(got[index].FgCol.Name, w.FgCol.Name)
