@@ -12,7 +12,7 @@ type ParseOption struct {
 	ignoreUnexpectedCode bool
 	ansiForegroundColor  string
 	ansiBackgroundColor  string
-	nonColorCodes        NonColorCodesBehavior
+	NonColorCodes        NonColorCodesBehavior
 }
 
 // WithIgnoreInvalidCodes disables returning an error on invalid ANSI code.

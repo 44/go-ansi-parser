@@ -362,7 +362,7 @@ func TestParseKeepNonColor(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := Parse(tt.input, ParseOption{nonColorCodes: Keep})
+			got, err := Parse(tt.input, ParseOption{NonColorCodes: Keep})
 			is2.Equal(err != nil, tt.wantErr)
 			for index, w := range tt.want {
 				is2.Equal(got[index].Label, w.Label)
@@ -397,7 +397,7 @@ func TestParseRemoveNonColor(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := Parse(tt.input, ParseOption{nonColorCodes: Remove})
+			got, err := Parse(tt.input, ParseOption{NonColorCodes: Remove})
 			is2.Equal(err != nil, tt.wantErr)
 			for index, w := range tt.want {
 				is2.Equal(got[index].Label, w.Label)

@@ -283,8 +283,8 @@ func Parse(input string, options ...ParseOption) ([]*StyledText, error) {
 	nonColorCodes := Ignore
 
 	for _, option := range options {
-		if option.nonColorCodes != Ignore {
-			nonColorCodes = option.nonColorCodes
+		if option.NonColorCodes != Ignore {
+			nonColorCodes = option.NonColorCodes
 		}
 	}
 	var result []*StyledText
